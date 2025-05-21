@@ -192,27 +192,6 @@ const Products = () => {
     setFilteredProducts(result);
   }, [searchTerm, categoryFilter, supplierFilter, locationFilter, products]);
 
-  // Handle input changes including nested location fields
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-
-  //   if (name.startsWith("location.")) {
-  //     const locationField = name.split(".")[1];
-  //     setFormData({
-  //       ...formData,
-  //       location: {
-  //         ...formData.location,
-  //         [locationField]: value,
-  //       },
-  //     });
-  //   } else {
-  //     setFormData({
-  //       ...formData,
-  //       [name]: value,
-  //     });
-  //   }
-  // };
-
   // Memoize the handleInputChange function
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -298,65 +277,19 @@ const Products = () => {
   }, []);
 
   return (
-    <div className="p-6 bg-gray-50 overflow-x-hidden overflow-y-scroll">
+    <div className="p-6 bg-gray-50 overflow-x-hidden">
       <div className="mb-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800">
-              Products Management
-            </h2>
-            <p className="text-gray-600">
-              Manage your pharmacy's product inventory
-            </p>
-          </div>
+        <div className="flex justify-end">
           <button
             onClick={openAddModal}
-            className="mt-4 md:mt-0 flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <FiPlus className="mr-2" />
             Add New Product
           </button>
         </div>
       </div>
-      {/* Tabs */}
-      <div className="flex border-b border-gray-200 mb-6">
-        <button
-          onClick={() => setActiveTab("all")}
-          className={`px-4 py-2 font-medium text-sm ${
-            activeTab === "all"
-              ? "text-blue-600 border-b-2 border-blue-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          All Items
-        </button>
-        <button
-          onClick={() => setActiveTab("setting")}
-          className={`px-4 py-2 font-medium text-sm ${
-            activeTab === "setting"
-              ? "text-blue-600 border-b-2 border-blue-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          <div className="flex items-center">
-            <CiSettings className="mr-1" />
-            Product Settings
-          </div>
-        </button>
-        <button
-          onClick={() => setActiveTab("expiring")}
-          className={`px-4 py-2 font-medium text-sm ${
-            activeTab === "expiring"
-              ? "text-blue-600 border-b-2 border-blue-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          <div className="flex items-center">
-            <FiCalendar className="mr-1" />
-            Expiring Soon
-          </div>
-        </button>
-      </div>
+
       {/* Search and Filter */}
       <div className="mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
         <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
@@ -458,164 +391,12 @@ const Products = () => {
                 setIsModalOpen={setIsModalOpen}
                 currentProduct={currentProduct}
               />
-              {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <h4 className="font-medium text-gray-800">
-                    Product Information
-                  </h4>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Generic Name*
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Brand Name
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Dosage Form*
-                    </label>
-                    <select
-                      name="dosageform"
-                      value={formData.category}
-                      onChange={handleInputChange}
-                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      required
-                    >
-                      <option value="">Select Form</option>
-                      {categories.map((category) => (
-                        <option key={category} value={category}>
-                          {category}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Unit*
-                      </label>
-                      <input
-                        type="text"
-                        name="strength"
-                        value={formData.strength}
-                        onChange={handleInputChange}
-                        className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        required
-                        min="0"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Strength*
-                      </label>
-                      <input
-                        type="text"
-                        name="strength"
-                        value={formData.strength}
-                        onChange={handleInputChange}
-                        className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        required
-                        min="0"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Expiry Date*
-                    </label>
-                    <input
-                      type="date"
-                      name="expiry"
-                      value={formData.expiry}
-                      onChange={handleInputChange}
-                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Category*
-                    </label>
-                    <select
-                      name="category"
-                      value={formData.category}
-                      onChange={handleInputChange}
-                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      required
-                    >
-                      <option value="">Select category</option>
-                      {categories.map((category) => (
-                        <option key={category} value={category}>
-                          {category}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Stock*
-                      </label>
-                      <input
-                        type="number"
-                        name="stock"
-                        value={formData.stock}
-                        onChange={handleInputChange}
-                        className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        required
-                        min="0"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  {currentProduct ? "Update Product" : "Add Product"}
-                </button>
-              </div> */}
             </form>
           </div>
         </div>
       )}
 
       <PharmacyShelf ismodal={sampleModal} onClose={handleClose} />
-
-      <ProductSettings />
     </div>
   );
 };

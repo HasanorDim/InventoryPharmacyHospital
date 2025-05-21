@@ -17,6 +17,7 @@ import ReportSample from "./components/admin/ReportSample";
 import { useAuthStore } from "./store/useAuthStore";
 import Loader from "./components/Loader/Loader";
 import ForgotPasswordPage from "./components/ForgotPassword";
+import ProductMain from "./components/admin/ProductMain";
 
 function App() {
   // const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -54,7 +55,7 @@ function App() {
         >
           <Route index element={<DashboardAdmin />} />
           <Route path="inventory" element={<Inventory />} />
-          <Route path="products" element={<Products />} />
+          <Route path="products" element={<ProductMain />} />
           <Route path="settings" element={<Setting />} />
           <Route path="suppliers" element={<Suppliers />} />
           <Route path="report" element={<Report />} />

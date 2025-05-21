@@ -28,20 +28,13 @@ const ProductSettings = () => {
       updatedAt: "2024-05-18",
     },
   ]);
+  const [units, setUnits] = useState(["tablet", "vial", "bottle"]);
+  const [newUnit, setNewUnit] = useState("");
 
   const [dosageForms, setDosageForms] = useState([
     { id: 1, form: "Tablet", needsStrength: true },
     { id: 2, form: "Capsule", needsStrength: true },
     { id: 3, form: "Syrup", needsStrength: false },
-  ]);
-
-  const [units, setUnits] = useState([
-    "mg",
-    "g",
-    "mL",
-    "L",
-    "tablet",
-    "capsule",
   ]);
 
   // Modal states
@@ -51,6 +44,17 @@ const ProductSettings = () => {
     description: "",
     storageRequirements: "",
   });
+
+  const handleAddUnit = () => {
+    if (newUnit.trim() && !units.includes(newUnit.trim())) {
+      setUnits([...units, newUnit.trim()]);
+      setNewUnit("");
+    }
+  };
+
+  const handleDeleteUnit = (unitToDelete) => {
+    setUnits(units.filter((unit) => unit !== unitToDelete));
+  };
 
   // Handle category creation
   const handleAddCategory = () => {
@@ -200,41 +204,48 @@ const ProductSettings = () => {
       </div>
 
       {/* Units & Measurements Card */}
+      {/* Simplified Countable Units Card */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold flex items-center">
             <FiPackage className="mr-2 text-blue-600" />
             Stock Unit
             <span className="text-sm text-gray-600 ml-2">
-              {" ("}how the item is counted {")"}
+              {" ("}how the item is counted in stock {")"}
             </span>
           </h3>
         </div>
 
+        {/* Input Group - Simplified */}
         <div className="flex mb-4">
-          <select className="block w-32 px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-            <option>Weight</option>
-            <option>Volume</option>
-            <option>Units</option>
-          </select>
           <input
             type="text"
-            placeholder="e.g. mg, mL"
-            className="flex-1 min-w-0 block px-3 py-2 border-t border-b border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            placeholder="e.g. tablet, vial, ampule"
+            className="flex-1 block px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            value={newUnit}
+            onChange={(e) => setNewUnit(e.target.value)}
           />
-          <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-            <FiSave className="mr-1" /> Add
+          <button
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            onClick={handleAddUnit}
+            disabled={!newUnit.trim()}
+          >
+            <FiPlus className="mr-1" /> Add
           </button>
         </div>
 
+        {/* Unit Tags - Pharmacy Optimized */}
         <div className="flex flex-wrap gap-2">
           {units.map((unit) => (
             <div
               key={unit}
-              className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-800"
+              className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-800 text-sm"
             >
               {unit}
-              <button className="ml-2 text-gray-500 hover:text-red-500">
+              <button
+                className="ml-2 text-gray-500 hover:text-red-500"
+                onClick={() => handleDeleteUnit(unit)}
+              >
                 <FiTrash2 size={14} />
               </button>
             </div>
