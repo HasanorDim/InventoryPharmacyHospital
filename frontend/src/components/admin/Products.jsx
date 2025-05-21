@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   FiPackage,
   FiPlus,
@@ -331,6 +331,12 @@ const Products = () => {
         return null;
     }
   };
+
+  const handleClose = useCallback(() => {
+    setSampleModal(false);
+  }, []);
+
+  console.log("PRoduct");
 
   return (
     <div className="p-6 bg-gray-50 overflow-x-hidden overflow-y-scroll">
@@ -984,45 +990,7 @@ const Products = () => {
         </div>
       )}
 
-      {/* {sampleModal && (
-        <div className="fixed inset-0 bg-opacity-50  p-4 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
-            <div className="flex justify-between items-center border-b px-6 py-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                {currentProduct ? "Edit Product" : "Set Product Location"}
-              </h3>
-              <button
-                onClick={() => setSampleModal(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <FiX className="h-6 w-6" />
-              </button>
-            </div>
-            <form onSubmit={handleSubmit} className="p-6">
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setSampleModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  {currentProduct ? "Update Product" : "Add Product"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )} */}
-
-      <PharmacyShelf
-        ismodal={sampleModal}
-        onClose={() => setSampleModal(false)}
-      />
+      <PharmacyShelf ismodal={sampleModal} onClose={handleClose} />
     </div>
   );
 };

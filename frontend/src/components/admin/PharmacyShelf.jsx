@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { memo } from "react";
 import { FiX, FiPlus } from "react-icons/fi";
 
 const PharmacyShelf = ({ ismodal, onClose }) => {
@@ -21,12 +22,20 @@ const PharmacyShelf = ({ ismodal, onClose }) => {
     },
   ]);
 
-  const shelfBoxes = Array(30)
-    .fill(null)
-    .map((_, index) => ({
-      id: index + 1,
-      product: products.find((p) => p.id === index + 1) || null,
-    }));
+  //   const shelfBoxes = Array(30)
+  //     .fill(null)
+  //     .map((_, index) => ({
+  //       id: index + 1,
+  //       product: products.find((p) => p.id === index + 1) || null,
+  //     }));
+
+  const totalBoxes = 30;
+  const columns = 6; // This can come from a settings form or state
+  const shelfBoxes = Array.from({ length: totalBoxes }, (_, i) => ({
+    id: i + 1,
+  }));
+
+  console.log("123");
 
   if (!ismodal) return null;
 
@@ -51,14 +60,19 @@ const PharmacyShelf = ({ ismodal, onClose }) => {
         </div>
 
         {/* Shelf Grid */}
-        <div className="p-4 overflow-y-auto ">
-          <div className="grid grid-cols-6 gap-2">
+        <div className="p-4 overflow-auto">
+          <div
+            className="grid gap-2 justify-center"
+            style={{
+              gridTemplateColumns: `repeat(${columns}, 80px)`,
+            }}
+          >
             {shelfBoxes.map((box) => (
               <div
                 key={box.id}
                 onClick={() => setSelectedBox(box)}
-                className={`w-full h-24 border rounded p-1 cursor-pointer text-xs transition
-        flex flex-col justify-between
+                className={`w-[80px] h-[80px] border rounded p-1 cursor-pointer text-[10px] transition
+    flex flex-col justify-betwee
         ${
           box.product
             ? "border-blue-500 bg-blue-50"
@@ -169,4 +183,4 @@ const DetailRow = ({ label, value }) => (
   </div>
 );
 
-export default PharmacyShelf;
+export default memo(PharmacyShelf);
