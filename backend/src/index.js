@@ -6,11 +6,13 @@ import cookieParser from "cookie-parser";
 // import { app } from "./lib/socket.js";
 
 import authroute from "./routes/auth.routes.js";
+import productroute from "./routes/product.routes.js";
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
@@ -20,6 +22,7 @@ app.use(
 );
 
 app.use("/api/auth", authroute);
+app.use("/api/product", productroute);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
