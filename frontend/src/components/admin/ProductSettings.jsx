@@ -204,7 +204,10 @@ const ProductSettings = () => {
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold flex items-center">
             <FiPackage className="mr-2 text-blue-600" />
-            Measurement Units
+            Stock Unit
+            <span className="text-sm text-gray-600 ml-2">
+              {" ("}how the item is counted {")"}
+            </span>
           </h3>
         </div>
 

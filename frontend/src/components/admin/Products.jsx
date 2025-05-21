@@ -127,7 +127,7 @@ const Products = () => {
     stock: "",
     dosageForm: "",
     strength: "",
-    unit: "",
+    stockUnit: "",
   });
 
   // Get unique values for filters
@@ -231,7 +231,7 @@ const Products = () => {
       stock: "",
       dosageForm: "",
       strength: "",
-      unit: "",
+      stockUnit: "",
     });
     setIsModalOpen(true);
   };
