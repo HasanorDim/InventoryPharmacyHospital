@@ -40,6 +40,7 @@ const ProductSettings = () => {
 
   // Modal states
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showDosageFormModal, setShowDosageFormModal] = useState(false);
   const [newCategory, setNewCategory] = useState({
     name: "",
     description: "",
@@ -135,7 +136,7 @@ const ProductSettings = () => {
 
       {/* Dosage Forms Card */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-        <div className="flex justify-between items-center mb-4">
+        {/* <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold flex items-center">
             <FiDroplet className="mr-2 text-blue-600" />
             Dosage Forms
@@ -148,24 +149,22 @@ const ProductSettings = () => {
               <FiUpload className="mr-1" /> Import
             </button>
           </div>
-        </div>
-
-        {/* <div className="flex space-x-2 mb-4">
-          {["Tablets", "Liquids", "Injectables", "Topicals"].map((type) => (
-            <button
-              key={type}
-              className={`px-3 py-1 text-sm rounded-md ${
-                type === "Tablets"
-                  ? "bg-blue-100 text-blue-800"
-                  : "bg-gray-100 text-gray-800"
-              }`}
-            >
-              {type}
-            </button>
-          ))}
         </div> */}
 
-        <div className="flex mb-4">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold flex items-center">
+            <FiDroplet className="mr-2 text-blue-600" />
+            Dosage Forms
+          </h3>
+          <button
+            onClick={() => setShowDosageFormModal(true)}
+            className="flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
+          >
+            <FiPlus className="mr-1" /> Add Dosage form
+          </button>
+        </div>
+
+        {/* <div className="flex mb-4">
           <input
             type="text"
             placeholder="e.g. tablet, vial, liquid"
@@ -180,7 +179,7 @@ const ProductSettings = () => {
           >
             <FiPlus className="mr-1" /> Add
           </button>
-        </div>
+        </div> */}
 
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -221,7 +220,6 @@ const ProductSettings = () => {
         </div>
       </div>
 
-      {/* Units & Measurements Card */}
       {/* Simplified Countable Units Card */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
         <div className="flex justify-between items-center mb-4">
@@ -239,6 +237,52 @@ const ProductSettings = () => {
           <input
             type="text"
             placeholder="e.g. box, tablet, bottle"
+            className="flex-1 block px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            value={newUnit}
+            onChange={(e) => setNewUnit(e.target.value)}
+          />
+          <button
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            onClick={handleAddUnit}
+            disabled={!newUnit.trim()}
+          >
+            <FiPlus className="mr-1" /> Add
+          </button>
+        </div>
+
+        {/* Unit Tags - Pharmacy Optimized */}
+        <div className="flex flex-wrap gap-2">
+          {units.map((unit) => (
+            <div
+              key={unit}
+              className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-gray-800 text-sm"
+            >
+              {unit}
+              <button
+                className="ml-2 text-gray-500 hover:text-red-500"
+                onClick={() => handleDeleteUnit(unit)}
+              >
+                <FiTrash2 size={14} />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Storage Card */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold flex items-center">
+            <FiPackage className="mr-2 text-blue-600" />
+            Storage Room
+          </h3>
+        </div>
+
+        {/* Input Group - Simplified */}
+        <div className="flex mb-4">
+          <input
+            type="text"
+            placeholder="e.g. Room temp, Cold, Conrolled"
             className="flex-1 block px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             value={newUnit}
             onChange={(e) => setNewUnit(e.target.value)}
@@ -332,6 +376,67 @@ const ProductSettings = () => {
                   disabled={!newCategory.name}
                 >
                   Save Category
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDosageFormModal && (
+        <div className="fixed inset-0 bg-black/30 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div className="flex justify-between items-center border-b-2 border-b-gray-300 px-6 py-4">
+              <h3 className="text-lg font-semibold">New Dosage Form</h3>
+              <button
+                onClick={() => setShowDosageFormModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <FiX />
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Form Name*
+                  </label>
+                  <input
+                    type="text"
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    value={newCategory.name}
+                    onChange={(e) =>
+                      setNewCategory({ ...newCategory, name: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div className="flex space-x-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Requires Strength
+                  </label>
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-success"
+                    defaultValue={false}
+                  />
+                </div>
+              </div>
+              <div className="mt-6 flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowDosageFormModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAddCategory}
+                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                  disabled={!newCategory.name}
+                >
+                  Save Form
                 </button>
               </div>
             </div>
