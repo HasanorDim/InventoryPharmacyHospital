@@ -11,7 +11,7 @@ const supabase = createClient(
     // },
     auth: {
       flowType: "pkce", // Use PKCE flow
-      persistSession: true, // 🔑 Must be true
+      persistSession: false, // 🔑 Must be true
       autoRefreshToken: true,
       detectSessionInUrl: true,
     },

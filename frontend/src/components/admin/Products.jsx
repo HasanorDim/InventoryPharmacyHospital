@@ -124,7 +124,6 @@ const Products = () => {
   const [formData, setFormData] = useState({
     name: "",
     category: "",
-    stock: "",
     dosageForm: "",
     strength: "",
     stockUnit: "",
@@ -207,7 +206,6 @@ const Products = () => {
     setFormData({
       name: "",
       category: "",
-      stock: "",
       dosageForm: "",
       strength: "",
       stockUnit: "",

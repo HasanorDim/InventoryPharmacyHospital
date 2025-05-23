@@ -1,24 +1,17 @@
 import supabase from "../config/supabase.js";
-import { setTokenOnCookie } from "../lib/util.js";
+// import { setTokenOnCookie } from "../lib/util.js";
 
 export const checkAuth = async (req, res) => {
-  const user = req.user;
-
   try {
+    const user = req.user;
     const { data: userData, error: err } = await supabase
       .from("userstb")
       .select(
         `*,
         roletb(name)`
       )
-      .eq("id", user.sub)
+      .eq("id", user.id)
       .single();
-
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.getSession();
-
     return res.status(200).json(userData);
   } catch (error) {
     console.log("Error in checkAuth", error);
@@ -43,7 +36,7 @@ export const login = async (req, res) => {
     if (er) throw er;
 
     if (checkUser) {
-      setTokenOnCookie(checkUser.session.access_token, res);
+      // setTokenOnCookie(checkUser.session.access_token, res);
 
       const { data: user, error: err } = await supabase
         .from("userstb")
@@ -59,6 +52,17 @@ export const login = async (req, res) => {
         .single();
 
       if (err) throw err;
+
+      // setInterval(() => {
+      // supabase.auth.getSession().then(({ data: { session } }) => {
+      //   console.log("Seesion11: ", session);
+      // });
+
+      // supabase.auth.onAuthStateChange((_, session) => {
+      //   console.log("SessionZ: ", session);
+      // });
+      // }, 5000);
+
       return res.status(200).json(user);
     }
   } catch (error) {
@@ -67,9 +71,12 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
+  let { error } = await supabase.auth.signOut();
+
+  if (error) console.log("error in logout: ", error);
   // Clear the JWT token from the cookie
-  res.clearCookie("jwt"); // Adjust the cookie name if necessary
+  // res.clearCookie("jwt");
   // res.clearCookie("jwt_ticket_user");
   // Send response to indicate successful logout
   res.status(200).json({ message: "Logged out successfully" });

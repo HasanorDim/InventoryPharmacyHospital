@@ -8,7 +8,6 @@ import MainContent from "./pages/admin/MainContent";
 import DashboardAdmin from "./components/admin/DashboardAdmin";
 import Inventory from "./components/admin/Inventory";
 import Sample from "./pages/sample";
-import Products from "./components/admin/Products";
 import Setting from "./components/admin/Setting";
 import Suppliers from "./components/admin/Suppliers";
 import Report from "./components/admin/Report";
@@ -52,6 +51,7 @@ function App() {
         <Route
           path="/dashboard-admin"
           element={authUser ? <MainContent /> : <Navigate to="/login" />}
+          // element={<MainContent />}
         >
           <Route index element={<DashboardAdmin />} />
           <Route path="inventory" element={<Inventory />} />

@@ -14,13 +14,43 @@ export const useAuthStore = create((set, get) => ({
   isCheckingAuth: false,
   socket: null,
 
+  checkUser: async () => {
+    try {
+      await axiosInstance.get("/auth/check");
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.message || "Failed to authenticate user";
+
+      toast.error(errorMessage);
+
+      if (window.stopCheckUserInterval) {
+        window.stopCheckUserInterval(); // ✅ This clears that specific interval
+      }
+    }
+  },
+
   checkAuth: async () => {
     set({ isCheckingAuth: true });
     try {
+      // setInterval(async () => {
       const response = await axiosInstance.get("/auth/check");
+      console.log("User: ", response.data);
+
+      // if (!response.data) {
+      //   console.log("User is null. Stopping interval.");
+      //   clearInterval(intervalId); // stop interval
+      //   set({ authUser: null });
+      //   return;
+      // }
+
       set({ authUser: response.data });
+      // }, 1000);
     } catch (error) {
       console.log("Error in checkAuth", error);
+      const errorMessage =
+        error?.response?.data?.message || "Failed to authenticate user";
+
+      // toast.error(errorMessage);
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });

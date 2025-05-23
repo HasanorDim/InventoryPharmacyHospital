@@ -42,7 +42,7 @@ const ProductMain = () => {
         </div>
       </div>
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 mb-6">
+      <div className="flex border-b border-gray-200 mb-0.5">
         <button
           onClick={() => setActiveTab("products")}
           className={`px-4 py-2 font-medium text-sm ${
@@ -83,10 +83,14 @@ const ProductMain = () => {
 
       {/* Other View */}
 
-      {activeTab === "products" ? <Products /> : ""}
+      {activeTab === "products" ? (
+        <Products />
+      ) : activeTab === "setting" ? (
+        <ProductSettings />
+      ) : (
+        ""
+      )}
     </div>
-
-    // <ProductSettings />
   );
 };
 export default ProductMain;

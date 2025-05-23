@@ -1,19 +1,29 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import supabase from "../config/supabase.js";
 
 dotenv.config();
 
 export const protectRoute = async (req, res, next) => {
   try {
-    const token = req.cookies.jwt;
-    if (!token)
-      return res
-        .status(401)
-        .json({ message: "Unauthorized - No token Provided! " });
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+    if (error) console.log("error: ", error.message);
+    if (!user) return res.status(401).json({ message: "Unauthorized" });
+    //         .status(401)
+    // .json({ message: "Unauthorized - No token Provided! " });
 
-    // Verify token
-    const decode = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decode;
+    req.user = user;
+
+    // supabase.auth.getSession().then(({ data: { session } }) => {
+    //   console.log("Seesion11: ", session);
+    // });
+
+    // supabase.auth.onAuthStateChange((_, session) => {
+    //   console.log("SessionZ: ", session);
+    // });
 
     next();
   } catch (error) {

@@ -9,6 +9,7 @@ import {
   FiEdit,
   FiDownload,
   FiUpload,
+  FiX,
 } from "react-icons/fi";
 import { CiSettings } from "react-icons/ci";
 
@@ -149,7 +150,7 @@ const ProductSettings = () => {
           </div>
         </div>
 
-        <div className="flex space-x-2 mb-4">
+        {/* <div className="flex space-x-2 mb-4">
           {["Tablets", "Liquids", "Injectables", "Topicals"].map((type) => (
             <button
               key={type}
@@ -162,6 +163,23 @@ const ProductSettings = () => {
               {type}
             </button>
           ))}
+        </div> */}
+
+        <div className="flex mb-4">
+          <input
+            type="text"
+            placeholder="e.g. tablet, vial, liquid"
+            className="flex-1 block px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            value={newUnit}
+            onChange={(e) => setNewUnit(e.target.value)}
+          />
+          <button
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            onClick={handleAddUnit}
+            disabled={!newUnit.trim()}
+          >
+            <FiPlus className="mr-1" /> Add
+          </button>
         </div>
 
         <div className="overflow-x-auto">
@@ -220,7 +238,7 @@ const ProductSettings = () => {
         <div className="flex mb-4">
           <input
             type="text"
-            placeholder="e.g. tablet, vial, ampule"
+            placeholder="e.g. box, tablet, bottle"
             className="flex-1 block px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             value={newUnit}
             onChange={(e) => setNewUnit(e.target.value)}
@@ -255,9 +273,9 @@ const ProductSettings = () => {
 
       {/* Add Category Modal */}
       {showCategoryModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/30 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
-            <div className="flex justify-between items-center border-b px-6 py-4">
+            <div className="flex justify-between items-center border-b-2 border-b-gray-300 px-6 py-4">
               <h3 className="text-lg font-semibold">New Product Category</h3>
               <button
                 onClick={() => setShowCategoryModal(false)}
@@ -297,26 +315,6 @@ const ProductSettings = () => {
                       })
                     }
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Storage Requirements
-                  </label>
-                  <select
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    value={newCategory.storageRequirements}
-                    onChange={(e) =>
-                      setNewCategory({
-                        ...newCategory,
-                        storageRequirements: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="">Select storage type</option>
-                    <option value="Room Temperature">Room Temperature</option>
-                    <option value="Refrigerated">Refrigerated</option>
-                    <option value="Controlled">Controlled</option>
-                  </select>
                 </div>
               </div>
               <div className="mt-6 flex justify-end space-x-3">
