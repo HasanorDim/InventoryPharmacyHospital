@@ -29,7 +29,6 @@ const AddProductField = ({
 
   return (
     <div>
-      {" "}
       <h4 className="block text-sm font-medium text-gray-700 mb-5">
         Product Information
       </h4>
@@ -71,8 +70,8 @@ const AddProductField = ({
             >
               <option value="">-- Category --</option>
               {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
+                <option key={category.id} value={category.name}>
+                  {category.name}
                 </option>
               ))}
             </select>
@@ -99,8 +98,8 @@ const AddProductField = ({
                 -- Form --
               </option>
               {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
+                <option key={category.id} value={category.name}>
+                  {category.name}
                 </option>
               ))}
             </select>
@@ -138,8 +137,8 @@ const AddProductField = ({
                   -- unit --
                 </option>
                 {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
+                  <option key={category.id} value={category.name}>
+                    {category.name}
                   </option>
                 ))}
               </select>

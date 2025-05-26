@@ -18,6 +18,7 @@ import { useProductStore } from "../../store/useProductStore";
 import ProductSettings from "./ProductSettings";
 
 const Products = () => {
+  const categories = useProductStore((state) => state.categories);
   // Initial product data with location details
   const initialProducts = [
     {
@@ -130,14 +131,7 @@ const Products = () => {
   });
 
   // Get unique values for filters
-  const categories = [...new Set(products.map((product) => product.category))];
-  const suppliers = [...new Set(products.map((product) => product.supplier))];
-  const storageTypes = [
-    ...new Set(products.map((product) => product.location.storageType)),
-  ];
-  const buildings = [
-    ...new Set(products.map((product) => product.location.building)),
-  ];
+  // const categories = [...new Set(products.map((product) => product.category))];
 
   // Fetch products (simulated API call)
   useEffect(() => {
@@ -274,6 +268,8 @@ const Products = () => {
     setSampleModal(false);
   }, []);
 
+  console.log("categories: ", categories);
+
   return (
     <div className="p-6 bg-gray-50 overflow-x-hidden">
       <div className="mb-6">
@@ -310,20 +306,8 @@ const Products = () => {
           >
             <option value="">All Categories</option>
             {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <select
-            className="block w-full md:w-48 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            value={supplierFilter}
-            onChange={(e) => setSupplierFilter(e.target.value)}
-          >
-            <option value="">All Suppliers</option>
-            {suppliers.map((supplier) => (
-              <option key={supplier} value={supplier}>
-                {supplier}
+              <option key={category.id} value={category.name}>
+                {category.name}
               </option>
             ))}
           </select>
