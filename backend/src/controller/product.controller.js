@@ -2,14 +2,17 @@ import supabase from "../config/supabase.js";
 
 export const allData = async (req, res) => {
   try {
-    const [categoriesRes, dosageRes, unitRes, storageRes] = await Promise.all([
-      supabase.from("categories_tb").select("*"),
-      supabase.from("dosageform_tb").select("*"),
-      supabase.from("stockunit_tb").select("*"),
-      supabase.from("storage_tb").select("*"),
-    ]);
+    const [medicineRes, categoriesRes, dosageRes, unitRes, storageRes] =
+      await Promise.all([
+        supabase.from("medicine_tb").select("*"),
+        supabase.from("categories_tb").select("*"),
+        supabase.from("dosageform_tb").select("*"),
+        supabase.from("stockunit_tb").select("*"),
+        supabase.from("storage_tb").select("*"),
+      ]);
 
     const errorRes = [
+      medicineRes.error,
       categoriesRes.error,
       dosageRes.error,
       unitRes.error,
@@ -19,10 +22,10 @@ export const allData = async (req, res) => {
     if (errorRes.length > 0) {
       throw new AggregateError(errorRes, "Multiple database errors occurred");
     }
-
+    ``;
     return res
       .status(200)
-      .json({ categoriesRes, dosageRes, unitRes, storageRes });
+      .json({ medicineRes, categoriesRes, dosageRes, unitRes, storageRes });
   } catch (error) {
     console.log("Error from adding product: ", error);
     return res.status(400).json({ message: "Internal server error" });
@@ -31,7 +34,8 @@ export const allData = async (req, res) => {
 
 export const addingProduct = async (req, res) => {
   try {
-    const { name, category, dosageForm, strength, stockUnit } = req.body;
+    const { name, category, dosageForm, strength, stockUnit, storageType } =
+      req.body;
 
     const { data: insertedData, error: er } = await supabase
       .from("medicine_tb")
@@ -42,29 +46,95 @@ export const addingProduct = async (req, res) => {
           dosage_form: dosageForm,
           category,
           stockUnit,
+          storageType,
         },
-      ]);
+      ])
+      .select();
 
     if (er) throw er;
 
-    return res.status(200).json();
+    if (insertedData) {
+      const { data: updatedData, error: errData } = await supabase
+        .from("medicine_tb")
+        .select("*");
+
+      if (errData) throw errData;
+
+      return res.status(200).json(updatedData);
+    }
   } catch (error) {
     console.log("Error from adding product: ", error);
     return res.status(400).json({ message: "Internal server error" });
   }
 };
 
-export const dataCategory = async (req, res) => {
+export const editProduct = async (req, res) => {
+  const { name, category, dosageForm, strength, stockUnit, storageType, id } =
+    req.body;
+
+  if (
+    !name.trim() ||
+    !category.trim() ||
+    !dosageForm.trim() ||
+    !strength.trim() ||
+    !stockUnit.trim() ||
+    !storageType.trim()
+  ) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
   try {
-    const { data: insertedData, error: er } = await supabase
-      .from("categories_tb")
-      .select("*");
+    const { data: editedData, error: dataEr } = await supabase
+      .from("medicine_tb")
+      .update({
+        medicine_name: name,
+        category,
+        dosage_form: dosageForm,
+        strength,
+        stockUnit,
+        storageType,
+      })
+      .eq("id", id)
+      .select();
 
-    if (er) throw er;
+    if (dataEr) throw dataEr;
 
-    return res.status(200).json(insertedData);
+    if (editedData) {
+      const { data: newData, error: newDataError } = await supabase
+        .from("medicine_tb")
+        .select("*");
+
+      if (newDataError) throw newDataError;
+
+      return res.status(200).json(newData);
+    }
   } catch (error) {
     console.log("Error from adding product: ", error);
+    return res.status(400).json({ message: "Internal server error" });
+  }
+};
+
+export const deleteProduct = async (req, res) => {
+  const { id } = req.body;
+  try {
+    const { data: deletedData, error } = await supabase
+      .from("medicine_tb")
+      .delete()
+      .eq("id", id)
+      .select("*");
+
+    if (error) throw error;
+
+    if (deletedData) {
+      const { data, error: er } = await supabase
+        .from("medicine_tb")
+        .select("*");
+
+      if (er) throw er;
+
+      return res.status(200).json(data);
+    }
+  } catch (error) {
+    console.log("Error from adding unit: ", error);
     return res.status(400).json({ message: "Internal server error" });
   }
 };

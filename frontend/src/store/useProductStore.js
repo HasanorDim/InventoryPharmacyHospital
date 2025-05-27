@@ -11,6 +11,7 @@ export const useProductStore = create((set, get) => ({
   isLoadingDeletingUnit: false,
   isLoadingStorage: false,
   isLoadingDeletingStorage: false,
+  productsState: [],
   categories: [],
   dosageForms: [],
   unit: [],
@@ -19,6 +20,7 @@ export const useProductStore = create((set, get) => ({
   getData: async () => {
     try {
       const response = await axiosInstance.get("/product/all-data");
+      set({ productsState: response.data.medicineRes.data });
       set({ dosageForms: response.data.dosageRes.data });
       set({ unit: response.data.unitRes.data });
       set({ storage: response.data.storageRes.data });
@@ -34,9 +36,10 @@ export const useProductStore = create((set, get) => ({
   setProduct: async (data) => {
     set({ isProduct: true });
     try {
-      await axiosInstance.post("/product/add-product", data);
-
+      const response = await axiosInstance.post("/product/add-product", data);
+      set({ productsState: response.data });
       toast.success("Medicine added successfully");
+      return { success: true };
     } catch (error) {
       console.log("Error from adding product", error);
       toast.error(
@@ -44,6 +47,41 @@ export const useProductStore = create((set, get) => ({
           error.message ||
           "Failed to add Product!"
       );
+    } finally {
+      set({ isProduct: false });
+    }
+  },
+
+  setEditProduct: async (data) => {
+    set({ isProduct: true });
+    try {
+      const response = await axiosInstance.post("/product/edit-product", data);
+      set({ productsState: response.data });
+      toast.success("Product updated");
+      return { success: true };
+    } catch (error) {
+      console.log("Error in set updated Product: ", error);
+      const err = error?.response?.data?.message || "Failed to update Product";
+      toast.error(err);
+    } finally {
+      set({ isProduct: false });
+    }
+  },
+
+  setDeleteProduct: async (data) => {
+    set({ isProduct: true });
+    try {
+      const response = await axiosInstance.post(
+        "/product/delete-product",
+        data
+      );
+      set({ productsState: response.data });
+      toast.success("Product removed");
+      return { success: true };
+    } catch (error) {
+      console.log("Error in set removed Product: ", error);
+      const err = error?.response?.data?.message || "Failed to removed Product";
+      toast.error(err);
     } finally {
       set({ isProduct: false });
     }
@@ -98,19 +136,6 @@ export const useProductStore = create((set, get) => ({
       toast.error(err);
     } finally {
       set({ isLoadingCategory: false });
-    }
-  },
-
-  getCategory: async () => {
-    try {
-      const response = await axiosInstance.get("/product/category-form-data");
-      console.log("getCategory: ", response.data);
-      set({ categories: response.data });
-    } catch (error) {
-      console.log("Error in set category: ", error);
-      const err = error?.response?.data?.message || "Failed to add Category";
-      toast.error(err);
-    } finally {
     }
   },
 

@@ -15,10 +15,16 @@ import LoadingData from "../Loader/LoadingData";
 import ProductTable from "./ProductTable";
 import StorageZone from "./StorageZone";
 import { useProductStore } from "../../store/useProductStore";
-import ProductSettings from "./ProductSettings";
+import ModalDelete from "./Modal/ModalDelete";
 
 const Products = () => {
-  const categories = useProductStore((state) => state.categories);
+  const { unit, storage, dosageForms, categories, productsState } =
+    useProductStore();
+  const setProduct = useProductStore((state) => state.setProduct);
+  const getData = useProductStore((state) => state.getData);
+  const setEditProduct = useProductStore((state) => state.setEditProduct);
+  const isProduct = useProductStore((state) => state.isProduct);
+  const setDeleteProduct = useProductStore((state) => state.setDeleteProduct);
   // Initial product data with location details
   const initialProducts = [
     {
@@ -108,43 +114,136 @@ const Products = () => {
     },
   ];
 
-  const setProduct = useProductStore((state) => state.setProduct);
-
   // State management
   const [products, setProducts] = useState([]);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [sampleModal, setSampleModal] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
-  const [supplierFilter, setSupplierFilter] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
+  const [currentData, setCurrentData] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     category: "",
     dosageForm: "",
     strength: "",
     stockUnit: "",
+    storageType: "",
+    onShelf: false,
   });
 
-  // Get unique values for filters
-  // const categories = [...new Set(products.map((product) => product.category))];
-
-  // Fetch products (simulated API call)
   useEffect(() => {
+    getData();
+  }, []);
+
+  useEffect(() => {
+    if (productsState.length > 0) {
+      setProducts(productsState);
+      // setFilteredProducts(productsState);
+    }
+  }, [productsState]);
+
+  useEffect(() => {
+    // getData();
     const fetchProducts = () => {
       setLoading(true);
       setTimeout(() => {
-        setProducts(initialProducts);
+        // setProducts(productsState);
         setFilteredProducts(initialProducts);
         setLoading(false);
       }, 500);
     };
     fetchProducts();
   }, []);
+
+  // Memoize the handleInputChange function
+  const handleInputChange = useCallback((e) => {
+    const { name, type, checked, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  }, []);
+
+  // Open modal for adding new product
+  const openAddModal = () => {
+    setCurrentProduct(null);
+    setFormData({
+      name: "",
+      category: "",
+      dosageForm: "",
+      strength: "",
+      stockUnit: "",
+      storageType: "",
+      onShelf: false,
+    });
+    setIsModalOpen(true);
+  };
+
+  // Open modal for editing product
+  const openEditModal = (product) => {
+    setCurrentProduct(product);
+    setFormData({
+      name: product.medicine_name,
+      category: product.category,
+      dosageForm: product.dosage_form,
+      strength: product.strength,
+      stockUnit: product.stockUnit,
+      storageType: product.storageType,
+      onShelf: product.onShelf,
+    });
+    setIsModalOpen(true);
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (currentProduct) {
+      const updatedProducts = { ...formData, id: currentProduct.id };
+      const result = await setEditProduct(updatedProducts);
+      if (result.success) {
+        setFormData({
+          name: "",
+          category: "",
+          dosageForm: "",
+          strength: "",
+          stockUnit: "",
+          storageType: "",
+          onShelf: false,
+        });
+        setIsModalOpen(false);
+      }
+    } else {
+      // Add new product
+      const result = await setProduct(formData);
+      if (result.success) {
+        setFormData({
+          name: "",
+          category: "",
+          dosageForm: "",
+          strength: "",
+          stockUnit: "",
+          storageType: "",
+          onShelf: false,
+        });
+        setIsModalOpen(false);
+      }
+    }
+  };
+
+  // Reset all filters
+  const resetFilters = () => {
+    setSearchTerm("");
+    setCategoryFilter("");
+    setSupplierFilter("");
+    setLocationFilter("");
+  };
 
   // Filter products
   useEffect(() => {
@@ -160,10 +259,6 @@ const Products = () => {
 
     if (categoryFilter) {
       result = result.filter((product) => product.category === categoryFilter);
-    }
-
-    if (supplierFilter) {
-      result = result.filter((product) => product.supplier === supplierFilter);
     }
 
     if (locationFilter) {
@@ -183,93 +278,25 @@ const Products = () => {
     }
 
     setFilteredProducts(result);
-  }, [searchTerm, categoryFilter, supplierFilter, locationFilter, products]);
-
-  // Memoize the handleInputChange function
-  const handleInputChange = useCallback((e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }, []);
-
-  // Open modal for adding new product
-  const openAddModal = () => {
-    setCurrentProduct(null);
-    setFormData({
-      name: "",
-      category: "",
-      dosageForm: "",
-      strength: "",
-      stockUnit: "",
-    });
-    setIsModalOpen(true);
-  };
-
-  // Open modal for editing product
-  const openEditModal = (product) => {
-    setCurrentProduct(product);
-    setFormData({
-      name: product.name,
-      category: product.category,
-      stock: product.stock,
-      price: product.price,
-      expiry: product.expiry,
-      supplier: product.supplier,
-      location: product.location,
-    });
-    setIsModalOpen(true);
-  };
-
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (currentProduct) {
-      // Update existing product
-      const updatedProducts = products.map((product) =>
-        product.id === currentProduct.id
-          ? {
-              ...formData,
-              id: currentProduct.id,
-            }
-          : product
-      );
-      setProducts(updatedProducts);
-    } else {
-      // Add new product
-      setProduct(formData);
-    }
-
-    setIsModalOpen(false);
-  };
-
-  // Delete product
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      setLoading(true);
-      setTimeout(() => {
-        setProducts(products.filter((product) => product.id !== id));
-        setLoading(false);
-      }, 500);
-    }
-  };
-
-  // Reset all filters
-  const resetFilters = () => {
-    setSearchTerm("");
-    setCategoryFilter("");
-    setSupplierFilter("");
-    setLocationFilter("");
-  };
+  }, [searchTerm, categoryFilter, locationFilter]);
 
   const handleClose = useCallback(() => {
     setSampleModal(false);
   }, []);
 
-  console.log("categories: ", categories);
+  const handleCancelData = () => {
+    setCurrentData(null);
+    setIsDeleteModalOpen(false);
+  };
 
+  const handleDeleteForm = async (data) => {
+    const result = await setDeleteProduct({ id: data.id });
+    if (result.success) {
+      setIsDeleteModalOpen(false);
+    }
+  };
+
+  console.log("Form Data: ", formData.onShelf);
   return (
     <div className="p-6 bg-gray-50 overflow-x-hidden">
       <div className="mb-6">
@@ -338,9 +365,11 @@ const Products = () => {
       ) : (
         <>
           <ProductTable
-            filteredProducts={filteredProducts}
+            filteredProducts={products}
             openEditModal={openEditModal}
-            handleDelete={handleDelete}
+            productsState={productsState}
+            setIsDeleteModalOpen={setIsDeleteModalOpen}
+            setCurrentData={setCurrentData}
           />
           <StorageZone
             filteredProducts={filteredProducts}
@@ -367,11 +396,16 @@ const Products = () => {
             </div>
             <form onSubmit={handleSubmit} className="p-6">
               <AddProductField
+                isProduct={isProduct}
                 formData={formData}
                 handleInputChange={handleInputChange}
                 categories={categories}
+                unit={unit}
+                storage={storage}
+                dosageForms={dosageForms}
                 setIsModalOpen={setIsModalOpen}
                 currentProduct={currentProduct}
+                setFormData={setFormData}
               />
             </form>
           </div>
@@ -379,6 +413,14 @@ const Products = () => {
       )}
 
       <PharmacyShelf ismodal={sampleModal} onClose={handleClose} />
+      {isDeleteModalOpen && (
+        <ModalDelete
+          currentData={currentData}
+          onConfirm={handleDeleteForm}
+          onCancel={handleCancelData}
+          isLoading={isProduct}
+        />
+      )}
     </div>
   );
 };

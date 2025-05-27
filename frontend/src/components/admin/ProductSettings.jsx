@@ -23,7 +23,6 @@ const ProductSettings = () => {
   const isLoadingCategory = useProductStore((state) => state.isLoadingCategory);
   const isLoadingForm = useProductStore((state) => state.isLoadingForm);
   const setDosageForm = useProductStore((state) => state.setDosageForm);
-  const getCategory = useProductStore((state) => state.getCategory);
   const getData = useProductStore((state) => state.getData);
   const categories = useProductStore((state) => state.categories);
   const setNewUnit = useProductStore((state) => state.setNewUnit);
@@ -66,9 +65,9 @@ const ProductSettings = () => {
   const [currentDosage, setCurrentDosage] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [currentDeletingId, setCurrentDeletingId] = useState(null);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   useEffect(() => {
-    getCategory();
     getData();
   }, []);
 
@@ -198,6 +197,12 @@ const ProductSettings = () => {
     setShowDosageFormModal(false);
   };
 
+  const temperatureOptions = [
+    { name: "Refrigerated", description: "Cold Storage (2-8°C)", icon: "❄️" },
+    { name: "Controlled", description: "Controlled Substance", icon: "🔒" },
+    { name: "Room Temperature", description: "Normal Storage", icon: "🌡️" },
+  ];
+
   return (
     <div className="space-y-6 mt-5">
       {/* Categories Card */}
@@ -296,39 +301,113 @@ const ProductSettings = () => {
           </h3>
         </div>
 
-        {/* Input Group - Simplified */}
-        <form onSubmit={handleAddStorage} className="flex mb-4">
-          <input
-            type="text"
-            placeholder="e.g. Room temp, Cold, Conrolled"
-            className="flex-1 block px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            value={newStorage.name}
-            onChange={(e) =>
-              setterNewStorage({ ...newStorage, name: e.target.value })
-            }
-          />
-          <button
-            type="submit"
-            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+        {/* Input Group with Temperature Suggestions */}
+        <form onSubmit={handleAddStorage} className="relative">
+          <div className="flex mb-4">
+            <input
+              type="text"
+              placeholder="e.g. Room temp, Cold, Controlled"
+              className="flex-1 block px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              value={newStorage.name}
+              onChange={(e) =>
+                setterNewStorage({ ...newStorage, name: e.target.value })
+              }
+              onFocus={() => setIsInputFocused(true)}
+              onBlur={() => setTimeout(() => setIsInputFocused(false), 200)}
+            />
+            <button
+              type="submit"
+              className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
               ${isLoadingStorage ? "bg-gray-300" : ""}
             `}
-            disabled={isLoadingStorage}
-          >
-            {isLoadingStorage ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin" />
-                Loading...
-              </>
-            ) : (
-              <>
-                {/* Save Category <ChevronRight className="ml-2 h-4 w-4" /> */}
-                <FiPlus className="mr-1" /> Add
-              </>
-            )}
-          </button>
+              disabled={isLoadingStorage}
+            >
+              {isLoadingStorage ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <FiPlus className="mr-1" /> Add
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Temperature Suggestions Dropdown */}
+          {isInputFocused && (
+            <div className="mt-1 p-3 bg-white border border-gray-200 rounded-lg shadow-md">
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium text-gray-500 whitespace-nowrap">
+                  Storage Type:
+                </span>
+
+                {/* Refrigerated Option */}
+                <label className="cursor-pointer group">
+                  <div className="p-2 rounded-lg group-hover:bg-cyan-50 flex flex-col items-center transition-colors">
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      onChange={() => {
+                        setterNewStorage({
+                          ...newStorage,
+                          name: "Refrigerated",
+                        });
+                        setIsInputFocused(false);
+                      }}
+                    />
+                    <span className="text-2xl mb-1">❄️</span>
+                    <span className="text-xs font-medium text-cyan-700">
+                      Cold
+                    </span>
+                  </div>
+                </label>
+
+                {/* Controlled Option */}
+                <label className="cursor-pointer group">
+                  <div className="p-2 rounded-lg group-hover:bg-red-50 flex flex-col items-center transition-colors">
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      onChange={() => {
+                        setterNewStorage({ ...newStorage, name: "Controlled" });
+                        setIsInputFocused(false);
+                      }}
+                    />
+                    <span className="text-2xl mb-1">🔒</span>
+                    <span className="text-xs font-medium text-red-700">
+                      Controlled
+                    </span>
+                  </div>
+                </label>
+
+                {/* Room Temperature Option */}
+                <label className="cursor-pointer group">
+                  <div className="p-2 rounded-lg group-hover:bg-amber-50 flex flex-col items-center transition-colors">
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      onChange={() => {
+                        setterNewStorage({
+                          ...newStorage,
+                          name: "Room Temperature",
+                        });
+                        setIsInputFocused(false);
+                      }}
+                    />
+                    <span className="text-2xl mb-1">🌡️</span>
+                    <span className="text-xs font-medium text-amber-700">
+                      Normal
+                    </span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          )}
         </form>
 
-        {/* Unit Tags - Pharmacy Optimized */}
+        {/* Existing Unit Tags */}
         <div className="flex flex-wrap gap-2">
           {storage.map((x) => (
             <div

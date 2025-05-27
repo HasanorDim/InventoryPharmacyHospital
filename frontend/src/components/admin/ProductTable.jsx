@@ -9,7 +9,18 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 
-const ProductTable = ({ filteredProducts, handleDelete, openEditModal }) => {
+const ProductTable = ({
+  filteredProducts,
+  openEditModal,
+  productsState,
+  setIsDeleteModalOpen,
+  setCurrentData,
+}) => {
+  const handleDeleteData = (data) => {
+    setCurrentData(data);
+    setIsDeleteModalOpen(true);
+  };
+
   return (
     <>
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -45,10 +56,7 @@ const ProductTable = ({ filteredProducts, handleDelete, openEditModal }) => {
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">
-                            {product.name}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            ID: {product.id}
+                            {product.medicine_name}
                           </div>
                         </div>
                       </div>
@@ -57,19 +65,19 @@ const ProductTable = ({ filteredProducts, handleDelete, openEditModal }) => {
                       {product.category}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <StorageBadge type={product.location.storageType} />
+                      <StorageBadge type={product?.storageType} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div className="flex items-center">
                         <FiMapPin className="mr-1 text-gray-400" />
                         <span>
-                          {product.location.zone}-{product.location.shelf}-
-                          {product.location.bin}
+                          {product.location?.zone}-{product.location?.shelf}-
+                          {product.location?.bin}
                         </span>
                       </div>
                       <div className="text-xs text-gray-400 mt-1">
-                        {product.location.building}, Floor{" "}
-                        {product.location.floor}
+                        {product.location?.building}, Floor{" "}
+                        {product.location?.floor}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -81,7 +89,7 @@ const ProductTable = ({ filteredProducts, handleDelete, openEditModal }) => {
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDelete(product.id)}
+                        onClick={() => handleDeleteData(product)}
                         className="text-red-600 hover:text-red-900"
                       >
                         <FiTrash2 className="inline mr-1" /> Delete
