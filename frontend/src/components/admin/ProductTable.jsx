@@ -1,12 +1,16 @@
 import React from "react";
 import {
-  FiDroplet,
   FiEdit2,
   FiLock,
   FiMapPin,
   FiPackage,
-  FiSun,
   FiTrash2,
+  FiAlertTriangle,
+  FiArchive,
+  FiHome,
+  FiThermometer,
+  FiShield,
+  FiBox,
 } from "react-icons/fi";
 
 const ProductTable = ({
@@ -136,29 +140,68 @@ const ProductTable = ({
   );
 };
 
-// Storage type badge component
 const StorageBadge = ({ type }) => {
-  switch (type) {
+  switch (type.trim()) {
+    // Temperature-Controlled
     case "Refrigerated":
       return (
         <span className="px-2 py-1 bg-cyan-100 text-cyan-800 text-xs rounded-full flex items-center">
-          <FiDroplet className="mr-1" /> ❄️ Cold Chain
+          <FiThermometer className="mr-1" /> ❄️ Refrigerated (2-8°C)
         </span>
       );
+    case "Freezer":
+      return (
+        <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full flex items-center">
+          <FiThermometer className="mr-1" /> 🧊 Freezer (-20°C)
+        </span>
+      );
+    case "Room Temperature":
+      return (
+        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full flex items-center">
+          <FiThermometer className="mr-1" /> 🌡️ Room Temp (15-25°C)
+        </span>
+      );
+
+    // Special Storage
     case "Controlled":
       return (
         <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full flex items-center">
           <FiLock className="mr-1" /> 🔒 Controlled
         </span>
       );
-    case "Room Temperature":
+    case "Hazardous":
       return (
-        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full flex items-center">
-          <FiSun className="mr-1" /> 🌡️ Room Temp
+        <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full flex items-center">
+          <FiAlertTriangle className="mr-1" /> ⚠️ Hazardous
         </span>
       );
+    case "Quarantine":
+      return (
+        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full flex items-center">
+          <FiShield className="mr-1" /> 🚫 Quarantine
+        </span>
+      );
+
+    // Location-Based
+    case "Main Pharmacy":
+      return (
+        <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full flex items-center">
+          <FiHome className="mr-1" /> 🏥 Main Pharmacy
+        </span>
+      );
+    case "Ward Stock":
+      return (
+        <span className="px-2 py-1 bg-amber-100 text-amber-800 text-xs rounded-full flex items-center">
+          <FiArchive className="mr-1" /> 🛏️ Ward Stock
+        </span>
+      );
+
     default:
-      return null;
+      return (
+        <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full flex items-center">
+          <FiBox className="mr-1" /> {type}
+        </span>
+      );
   }
 };
 export default ProductTable;

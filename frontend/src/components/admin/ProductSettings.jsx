@@ -302,8 +302,8 @@ const ProductSettings = () => {
         </div>
 
         {/* Input Group with Temperature Suggestions */}
-        <form onSubmit={handleAddStorage} className="relative">
-          <div className="flex mb-4">
+        <div className="relative">
+          <form onSubmit={handleAddStorage} className="flex mb-4">
             <input
               type="text"
               placeholder="e.g. Room temp, Cold, Controlled"
@@ -333,17 +333,16 @@ const ProductSettings = () => {
                 </>
               )}
             </button>
-          </div>
-
+          </form>
           {/* Temperature Suggestions Dropdown */}
           {isInputFocused && (
             <div className="mt-1 p-3 bg-white border border-gray-200 rounded-lg shadow-md">
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-4">
                 <span className="text-sm font-medium text-gray-500 whitespace-nowrap">
                   Storage Type:
                 </span>
 
-                {/* Refrigerated Option */}
+                {/* Temperature-Based Options */}
                 <label className="cursor-pointer group">
                   <div className="p-2 rounded-lg group-hover:bg-cyan-50 flex flex-col items-center transition-colors">
                     <input
@@ -359,12 +358,49 @@ const ProductSettings = () => {
                     />
                     <span className="text-2xl mb-1">❄️</span>
                     <span className="text-xs font-medium text-cyan-700">
-                      Cold
+                      Cold (2-8°C)
                     </span>
                   </div>
                 </label>
 
-                {/* Controlled Option */}
+                <label className="cursor-pointer group">
+                  <div className="p-2 rounded-lg group-hover:bg-blue-50 flex flex-col items-center transition-colors">
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      onChange={() => {
+                        setterNewStorage({ ...newStorage, name: "Freezer" });
+                        setIsInputFocused(false);
+                      }}
+                    />
+                    <span className="text-2xl mb-1">🧊</span>
+                    <span className="text-xs font-medium text-blue-700">
+                      Freezer (-20°C)
+                    </span>
+                  </div>
+                </label>
+
+                <label className="cursor-pointer group">
+                  <div className="p-2 rounded-lg group-hover:bg-amber-50 flex flex-col items-center transition-colors">
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      onChange={() => {
+                        setterNewStorage({
+                          ...newStorage,
+                          name: "Room Temperature",
+                        });
+                        setIsInputFocused(false);
+                      }}
+                    />
+                    <span className="text-2xl mb-1">🌡️</span>
+                    <span className="text-xs font-medium text-amber-700">
+                      Room Temp (15-25°C)
+                    </span>
+                  </div>
+                </label>
+
+                {/* Special Storage Options */}
                 <label className="cursor-pointer group">
                   <div className="p-2 rounded-lg group-hover:bg-red-50 flex flex-col items-center transition-colors">
                     <input
@@ -382,30 +418,81 @@ const ProductSettings = () => {
                   </div>
                 </label>
 
-                {/* Room Temperature Option */}
                 <label className="cursor-pointer group">
-                  <div className="p-2 rounded-lg group-hover:bg-amber-50 flex flex-col items-center transition-colors">
+                  <div className="p-2 rounded-lg group-hover:bg-purple-50 flex flex-col items-center transition-colors">
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      onChange={() => {
+                        setterNewStorage({ ...newStorage, name: "Hazardous" });
+                        setIsInputFocused(false);
+                      }}
+                    />
+                    <span className="text-2xl mb-1">⚠️</span>
+                    <span className="text-xs font-medium text-purple-700">
+                      Hazardous
+                    </span>
+                  </div>
+                </label>
+
+                <label className="cursor-pointer group">
+                  <div className="p-2 rounded-lg group-hover:bg-green-50 flex flex-col items-center transition-colors">
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      onChange={() => {
+                        setterNewStorage({ ...newStorage, name: "Quarantine" });
+                        setIsInputFocused(false);
+                      }}
+                    />
+                    <span className="text-2xl mb-1">🚫</span>
+                    <span className="text-xs font-medium text-green-700">
+                      Quarantine
+                    </span>
+                  </div>
+                </label>
+
+                {/* Location-Based Options */}
+                <label className="cursor-pointer group">
+                  <div className="p-2 rounded-lg group-hover:bg-gray-50 flex flex-col items-center transition-colors">
                     <input
                       type="checkbox"
                       className="sr-only"
                       onChange={() => {
                         setterNewStorage({
                           ...newStorage,
-                          name: "Room Temperature",
+                          name: "Main Pharmacy",
                         });
                         setIsInputFocused(false);
                       }}
                     />
-                    <span className="text-2xl mb-1">🌡️</span>
-                    <span className="text-xs font-medium text-amber-700">
-                      Normal
+                    <span className="text-2xl mb-1">🏥</span>
+                    <span className="text-xs font-medium text-gray-700">
+                      Main Pharmacy
+                    </span>
+                  </div>
+                </label>
+
+                <label className="cursor-pointer group">
+                  <div className="p-2 rounded-lg group-hover:bg-yellow-50 flex flex-col items-center transition-colors">
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      onChange={() => {
+                        setterNewStorage({ ...newStorage, name: "Ward Stock" });
+                        setIsInputFocused(false);
+                      }}
+                    />
+                    <span className="text-2xl mb-1">🛏️</span>
+                    <span className="text-xs font-medium text-yellow-700">
+                      Ward Stock
                     </span>
                   </div>
                 </label>
               </div>
             </div>
           )}
-        </form>
+        </div>
 
         {/* Existing Unit Tags */}
         <div className="flex flex-wrap gap-2">

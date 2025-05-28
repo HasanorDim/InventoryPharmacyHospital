@@ -5,154 +5,216 @@ import {
   FiLock,
   FiMapPin,
   FiRefreshCw,
+  FiThermometer,
 } from "react-icons/fi";
 
 const StorageZone = ({ filteredProducts, resetFilters, setSampleModal }) => {
+  // Storage Type Sections
+  const STORAGE_SECTIONS = [
+    {
+      type: "shelf",
+      name: "On Shelf Display",
+      icon: <FiBox className="text-indigo-600" />,
+      bgColor: "bg-indigo-50",
+      borderColor: "border-indigo-200",
+      textColor: "text-indigo-800",
+    },
+    {
+      type: "storage",
+      name: "Storage Areas",
+      icon: <FiBox className="text-slate-600" />,
+      bgColor: "bg-slate-50",
+      borderColor: "border-slate-300",
+      textColor: "text-slate-800",
+    },
+  ];
+
+  // Zone Data
+  const ZONES = [
+    {
+      name: "A",
+      type: "shelf",
+      accentColor: "bg-violet-100",
+      borderColor: "border-violet-300",
+    },
+    {
+      name: "B",
+      type: "shelf",
+      accentColor: "bg-blue-100",
+      borderColor: "border-blue-300",
+    },
+    {
+      name: "C",
+      type: "shelf",
+      accentColor: "bg-cyan-100",
+      borderColor: "border-cyan-300",
+    },
+    {
+      name: "Refrigerated",
+      type: "storage",
+      icon: <FiThermometer className="text-teal-600" />,
+      accentColor: "bg-teal-50",
+      borderColor: "border-teal-200",
+    },
+    {
+      name: "Narcotics",
+      type: "storage",
+      icon: <FiLock className="text-rose-600" />,
+      accentColor: "bg-rose-50",
+      borderColor: "border-rose-200",
+    },
+  ];
+
   return (
-    <div>
-      <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200 mt-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold text-gray-800 flex items-center">
-            <FiMapPin className="mr-2 text-blue-500" />
-            Storage Zone Overview
-          </h3>
-          <button
-            onClick={resetFilters}
-            className="text-sm text-blue-600 hover:text-blue-800 flex items-center "
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mt-6">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-semibold text-slate-800 flex items-center">
+          <FiMapPin className="mr-2 text-indigo-600" />
+          Storage Overview
+        </h3>
+        <button
+          onClick={resetFilters}
+          className="text-sm text-indigo-600 hover:text-indigo-800 flex items-center"
+        >
+          <FiRefreshCw className="mr-1" /> Reset
+        </button>
+      </div>
+
+      {/* Storage Type Sections */}
+      {STORAGE_SECTIONS.map((section) => (
+        <div key={section.type} className="mb-8">
+          {/* Section Header */}
+          <div
+            className={`flex items-center mb-4 p-3 ${section.bgColor} ${
+              section.borderColor
+            } rounded-lg border-l-4 ${
+              section.type === "shelf"
+                ? "border-l-indigo-400"
+                : "border-l-slate-400"
+            }`}
           >
-            <FiRefreshCw className="mr-1" /> Reset View
-          </button>
-        </div>
+            {section.icon}
+            <h4 className={`ml-2 font-medium ${section.textColor}`}>
+              {section.name}
+            </h4>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
-          {["A", "B", "C", "Refrigerated", "Narcotics"].map((zone) => {
-            const zoneProducts = filteredProducts.filter(
-              (p) => p.location.zone === zone
-            );
-            if (zoneProducts.length === 0) return null;
+          {/* Zone Boxes */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {ZONES.filter((zone) => zone.type === section.type).map((zone) => {
+              const zoneProducts = filteredProducts.filter(
+                (p) => p.location.zone === zone.name
+              );
+              if (zoneProducts.length === 0) return null;
 
-            // Determine zone-specific styling
-            const zoneStyles = {
-              A: "border-blue-200 bg-blue-50",
-              B: "border-green-200 bg-green-50",
-              C: "border-purple-200 bg-purple-50",
-              Refrigerated: "border-cyan-200 bg-cyan-50",
-              Narcotics: "border-red-200 bg-red-50",
-            };
-
-            return (
-              <div
-                key={zone}
-                className={`border rounded-xl p-4 ${
-                  zoneStyles[zone] || "border-gray-200 bg-gray-50"
-                }`}
-                onClick={() => {
-                  setSampleModal(true);
-                }}
-              >
-                <div className="flex items-center mb-3">
-                  {zone === "Refrigerated" ? (
-                    <FiDroplet className="text-cyan-500 mr-2" />
-                  ) : zone === "Narcotics" ? (
-                    <FiLock className="text-red-500 mr-2" />
-                  ) : (
-                    <FiBox className="text-blue-500 mr-2" />
-                  )}
-                  <h4 className="font-medium text-gray-800">
-                    {zone === "Refrigerated"
-                      ? "❄️ Refrigerated"
-                      : zone === "Narcotics"
-                      ? "🔒 Controlled"
-                      : `🗄️ Zone ${zone}`}
-                  </h4>
-                  <span className="ml-auto bg-white px-2 py-1 rounded-full text-xs font-medium">
-                    {zoneProducts.length} items
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                  {[1, 2, 3, 4, 5].map((shelf) => {
-                    const shelfProducts = zoneProducts.filter(
-                      (p) => p.location.shelf === shelf.toString()
-                    );
-                    if (shelfProducts.length === 0)
-                      return (
-                        <div
-                          key={shelf}
-                          className="border border-dashed border-gray-300 rounded-lg p-2 text-center opacity-50"
-                        >
-                          <div className="text-xs text-gray-400">
-                            Shelf {shelf}
-                          </div>
-                          <div className="text-xs text-gray-400">Empty</div>
-                        </div>
-                      );
-
-                    return (
-                      <div
-                        key={shelf}
-                        className={`border rounded-lg p-2 cursor-pointer transition-all hover:scale-105 ${
-                          shelfProducts.length > 10
-                            ? "bg-green-100 border-green-300"
-                            : shelfProducts.length > 5
-                            ? "bg-yellow-100 border-yellow-300"
-                            : "bg-red-100 border-red-300"
+              return (
+                <div
+                  key={zone.name}
+                  className={`border rounded-xl p-4 ${zone.accentColor} ${zone.borderColor} hover:shadow-md transition-shadow`}
+                  onClick={() => {
+                    setSampleModal(true);
+                  }}
+                >
+                  <div className="flex items-center mb-3">
+                    {zone.icon || (
+                      <FiBox
+                        className={`mr-2 ${
+                          section.type === "shelf"
+                            ? "text-indigo-600"
+                            : "text-slate-600"
                         }`}
-                        onClick={() => {
-                          setLocationFilter(zone);
-                          setSearchTerm(shelf.toString());
-                        }}
-                      >
-                        <div className="font-medium text-sm">Shelf {shelf}</div>
-                        <div
-                          className={`text-xs ${
-                            shelfProducts.length > 10
-                              ? "text-green-800"
-                              : shelfProducts.length > 5
-                              ? "text-yellow-800"
-                              : "text-red-800"
-                          }`}
-                        >
-                          {shelfProducts.length} item
-                          {shelfProducts.length !== 1 ? "s" : ""}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                      />
+                    )}
+                    <h4 className={`font-medium ${section.textColor}`}>
+                      {zone.type === "shelf"
+                        ? `🗄️ Zone ${zone.name}`
+                        : `📦 ${zone.name}`}
+                    </h4>
+                    <span className="ml-auto bg-white px-2 py-1 rounded-full text-xs font-medium shadow-xs">
+                      {zoneProducts.length} items
+                    </span>
+                  </div>
 
-        {/* Legend */}
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-xs">
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-blue-100 border border-blue-300 rounded-full mr-1"></div>
-            <span>Normal Storage</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-cyan-100 border border-cyan-300 rounded-full mr-1"></div>
-            <span>Refrigerated</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-red-100 border border-red-300 rounded-full mr-1"></div>
-            <span>Controlled</span>
-          </div>
-          {"||"}
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-green-100 border border-green-300 rounded-full mr-1"></div>
-            <span>High Stock</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-yellow-100 border border-yellow-300 rounded-full mr-1"></div>
-            <span>Medium Stock</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-red-100 border border-red-300 rounded-full mr-1"></div>
-            <span>Low Stock</span>
+                  {/* Shelves */}
+                  <div className="grid grid-cols-5 gap-2">
+                    {[1, 2, 3, 4, 5].map((shelf) => (
+                      <ShelfBox
+                        key={shelf}
+                        shelf={shelf}
+                        zone={zone.name}
+                        products={zoneProducts}
+                        isStorage={section.type === "storage"}
+                        zoneColor={zone.accentColor}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
+      ))}
+    </div>
+  );
+};
+
+// Shelf Component with enhanced colors
+const ShelfBox = ({ shelf, zone, products, isStorage, zoneColor }) => {
+  const shelfProducts = products.filter(
+    (p) => p.location.shelf === shelf.toString()
+  );
+
+  const stockLevel =
+    shelfProducts.length > 10
+      ? "high"
+      : shelfProducts.length > 5
+      ? "medium"
+      : "low";
+
+  if (shelfProducts.length === 0) {
+    return (
+      <div className="border border-dashed border-slate-300 rounded-lg p-1 text-center opacity-70">
+        <div className="text-xs text-slate-500">Shelf {shelf}</div>
+        <div className="text-xs text-slate-400">Empty</div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`rounded-lg p-2 border ${
+        isStorage
+          ? `bg-white border-slate-300 ${
+              stockLevel === "high"
+                ? "border-t-green-300 border-t-2"
+                : stockLevel === "medium"
+                ? "border-t-amber-300 border-t-2"
+                : "border-t-rose-300 border-t-2"
+            }`
+          : `${zoneColor} ${
+              stockLevel === "high"
+                ? "border-green-300"
+                : stockLevel === "medium"
+                ? "border-amber-300"
+                : "border-rose-300"
+            }`
+      }`}
+    >
+      <div className="font-medium text-sm text-slate-800">Shelf {shelf}</div>
+      <div
+        className={`text-xs ${
+          stockLevel === "high"
+            ? "text-green-700"
+            : stockLevel === "medium"
+            ? "text-amber-700"
+            : "text-rose-700"
+        }`}
+      >
+        {shelfProducts.length} item{shelfProducts.length !== 1 ? "s" : ""}
+        {isStorage && (
+          <span className="block text-slate-500 text-[0.65rem]">Storage</span>
+        )}
       </div>
     </div>
   );

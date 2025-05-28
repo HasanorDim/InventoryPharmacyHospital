@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
-import supabase from "../lib/supabase.js";
 
 const BASE_URL =
   import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
@@ -45,7 +44,9 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Logged In");
     } catch (error) {
       console.log("Error in login Auth Store", error);
-      toast.error(error.response?.data.message || "Failed to login");
+      toast.error(error.response?.data.message || "Failed to login", {
+        id: "error-toast",
+      });
     } finally {
       set({ isLogingIn: false });
     }

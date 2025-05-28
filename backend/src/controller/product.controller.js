@@ -4,7 +4,10 @@ export const allData = async (req, res) => {
   try {
     const [medicineRes, categoriesRes, dosageRes, unitRes, storageRes] =
       await Promise.all([
-        supabase.from("medicine_tb").select("*"),
+        supabase
+          .from("medicine_tb")
+          .select("*")
+          .order("updated_at", { ascending: false }),
         supabase.from("categories_tb").select("*"),
         supabase.from("dosageform_tb").select("*"),
         supabase.from("stockunit_tb").select("*"),
@@ -22,7 +25,7 @@ export const allData = async (req, res) => {
     if (errorRes.length > 0) {
       throw new AggregateError(errorRes, "Multiple database errors occurred");
     }
-    ``;
+
     return res
       .status(200)
       .json({ medicineRes, categoriesRes, dosageRes, unitRes, storageRes });
@@ -57,7 +60,6 @@ export const addingProduct = async (req, res) => {
       const { data: updatedData, error: errData } = await supabase
         .from("medicine_tb")
         .select("*");
-
       if (errData) throw errData;
 
       return res.status(200).json(updatedData);
@@ -92,6 +94,7 @@ export const editProduct = async (req, res) => {
         strength,
         stockUnit,
         storageType,
+        updated_at: new Date(),
       })
       .eq("id", id)
       .select();
@@ -101,9 +104,11 @@ export const editProduct = async (req, res) => {
     if (editedData) {
       const { data: newData, error: newDataError } = await supabase
         .from("medicine_tb")
-        .select("*");
+        .select("*")
+        .order("updated_at", { ascending: false });
 
       if (newDataError) throw newDataError;
+      console.log("newData:", newData);
 
       return res.status(200).json(newData);
     }
